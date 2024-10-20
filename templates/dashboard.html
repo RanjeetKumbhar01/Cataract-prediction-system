@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CataractAI | Home</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html">
+          <img
+            src="{{ url_for('static', filename='eye.png') }}"
+            alt="CataractAI Logo"
+          />
+        </a>
+        <!-- Replace with your actual logo path -->
+      </div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="under-construction">
+      <h1>Welcome,{{name}}!!</h1>
+      <a href="/logout">Logout</a>
+      <p>Home page is currently under construction.</p>
+      <p>Stay tuned for updates!</p>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <p>
+        Copyright &copy; 2024 <span>|</span> by <a href="#">Team CataractAI</a>
+        <br />
+        Source code available on
+        <a href="#" target="_blank">GitHub</a>
+      </p>
+    </footer>
+  </body>
+</html>
