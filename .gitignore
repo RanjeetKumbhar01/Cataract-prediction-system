@@ -7,3 +7,7 @@ cat/
 static/serviceAccountKey.json
 
 models/
+
+```
+firebase_config.py
+```s

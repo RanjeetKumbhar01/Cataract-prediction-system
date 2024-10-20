@@ -1,14 +1,47 @@
-from firebase_config import initialize_firebase
-from firebase_admin import auth, db
+# from firebase_config import initialize_firebase
+# from firebase_admin import auth, db
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import logging ,os
-
-
+import logging 
+import mysql.connector
+from mysql.connector import IntegrityError 
+import bcrypt
+import re  
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_key') # Necessary for using flash messages.
-initialize_firebase()
-# session.clear()
+app.secret_key = "key"
+# initialize_firebase()
+
+
+# MySQL connection configuration
+conn = mysql.connector.connect(
+    host="localhost",  # or your MySQL server
+    user="root",
+    password="root",
+    database="user_management"  # The name of your MySQL database
+)
+cursor = conn.cursor()
+
 logging.basicConfig(level=logging.INFO)
+
+
+
+# Helper function to validate email
+def is_valid_email(email):
+    regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(regex, email)
+
+# Helper function to validate password
+def is_valid_password(password):
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters long."
+    if len(password) > 32:
+        return False, "Password must not exceed 32 characters."
+    return True, ""
+
+def is_valid_age(age):
+    if int(age) < 10 or int(age) > 100:
+        return False, "Please enter a valid age between 10 and 100."
+    return True,""
+
 
 @app.route('/')
 def home(): 
@@ -18,44 +51,48 @@ def home():
 def signup_patient():
     if request.method == 'POST':
         # Get form data
-        # logging.info(f"Form Data: {request.form}\n")
         name = request.form['name']
         age = request.form['age']
         password = request.form['password']
         email = request.form['email']
-        # name = request.form.get('name')
-        # password = request.form.get('password')
-        # email = request.form.get('email')
-        # age = request.form.get('age')
         logging.info(f"Registration data: name={name}, age={age},password={password}, email={email}\n")
 
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Validate email
+        if not is_valid_email(email):
+            flash("Invalid email format. Please use a valid email like 'user@example.com'.")
+            return redirect(url_for('signup_patient'))
+
+        valid_password, password_msg = is_valid_password(password)
+        if not valid_password:
+            flash(password_msg)
+            return redirect(url_for('signup_patient'))
+
+        valid_age, age_msg = is_valid_age(age)
+        if not valid_age:
+            flash(age_msg)
+            return redirect(url_for('signup_patient'))
+        
+
         try:
-            # Create a new user with Firebase Authentication
-            user = auth.create_user(
-                email=email,
-                password=password,
-                display_name=name
-            )
-            logging.info(f"Firebase user created: {user.uid}")
-                   # Store additional user info in Firebase Realtime Database
-            ref = db.reference(f'p-users/{user.uid}')
-            ref.set({
-                'name': name,
-                'email': email,
-                'user_type': 'patient'
-            })
-            flash(f'Registration successful for {name}!', 'success')
+            sql = "INSERT INTO users (name, email, password, age, user_type) VALUES (%s, %s, %s, %s,'patient')"
+            cursor.execute(sql, (name, email, hashed_password, age))
+            conn.commit()
+            flash(f'Registration successful for {name}!')
+        
+        except IntegrityError as e:  # Catch duplicate email errors
+            if e.errno == 1062:  # 1062 is the error code for duplicate entry in MySQL
+                flash("This email is already registered. Please use a different email.", 'error')
+            else:
+                flash(f'Error: {str(e)}', 'error')
 
-        # except auth.AuthError as e:
-        #     logging.error(f"Error creating user: {str(e)}")
-        #     if 'WEAK_PASSWORD' in str(e):
-        #         flash('Error: Password should be at least 6 characters long.', 'error')
-        #     else: 
-        #         flash(f'Error: {str(e)}', 'error')
-
+            return redirect(url_for('signup_patient'))
+            
         except Exception as e:
             logging.error(f"Error creating user: {str(e)}")
             flash(f'Error: {str(e)}', 'error')
+            return redirect(url_for('signup_patient'))
 
         return redirect(url_for('login'))
 
@@ -65,45 +102,33 @@ def signup_patient():
 def signup_staff():
     if request.method == 'POST':
         # Get form data
-        # logging.info(f"Form Data: {request.form}\n")
         name = request.form['name']
         HospitalName = request.form['HospitalName']        # name = request.form.get('name')
         email = request.form['email']
         password = request.form['password']
-        # password = request.form.get('password')
-        # email = request.form.get('email')
-        # age = request.form.get('age')
         logging.info(f"Registration data: name={name}, HospitalName={HospitalName},password={password}, email={email}\n")
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         try:
-            # Create a new user with Firebase Authentication
-            user = auth.create_user(
-                email=email,
-                password=password,
-                display_name=name
-            )
-            logging.info(f"Firebase user created: {user.uid}")
-                   # Store additional user info in Firebase Realtime Database
-            ref = db.reference(f's-users/{user.uid}')
-            ref.set({
-                'name': name,
-                'email': email,
-                'user_type': 'staff'
-            })
-            flash(f'Registration successful for {name}!', 'success')
+            # Insert the data into the MySQL database
+            sql = "INSERT INTO users (name, email, password, user_type, hospital_name) VALUES (%s, %s, %s, 'staff', %s)"
+            cursor.execute(sql, (name, email, hashed_password, HospitalName))
+            conn.commit()
+            flash(f'Registration successful for {name}!')
 
-        except auth.AuthError as e:
-            logging.error(f"Error creating user: {str(e)}")
-            if 'WEAK_PASSWORD' in str(e):
-                flash('Error: Password should be at least 6 characters long.', 'error')
+        except IntegrityError as e:  # Catch duplicate email errors
+            if e.errno == 1062:  # 1062 is the error code for duplicate entry in MySQL
+                flash("This email is already registered. Please use a different email.", 'error')
             else:
                 flash(f'Error: {str(e)}', 'error')
+
+            return redirect(url_for('signup_patient'))
 
         except Exception as e:
             logging.error(f"Error creating user: {str(e)}")
             flash(f'Error: {str(e)}', 'error')
 
-        return redirect(url_for('signup_staff'))
+        return redirect(url_for('login'))
 
     return render_template('signup_staff.html')
 
@@ -119,20 +144,32 @@ def login():
         logging.info(f"login attempt: , email={type(email)}, password={type(password)}")
 
         try:
-            user = auth.sign_in_with_email_and_password(email,password)
-            logging.info(f"Loggin successfull ",user)
-            name = user.display_name
+            # user = auth.sign_in_with_email_and_password(email,password)
+            # name = user.display_name
+                    # Fetch the user's password from the MySQL database
+            sql = "SELECT name, password FROM users WHERE email = %s"
+            cursor.execute(sql, (email,))
+            result = cursor.fetchone()
+            if result:
+                stored_name, stored_password = result
 
-            return redirect(url_for('dashboard', name=name))
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+                      logging.info(f"Loggin successfull ",stored_name)
+            else:
+                logging.info(f"Invalid password ",stored_name)
+                flash("Invalid email or password.")
+                return redirect(url_for("login"))
+
+            return redirect(url_for('dashboard', name=stored_name))
 
         except Exception as e:
             flash("Invalid email or password.", 'error')
             return redirect(url_for("login"))
     return render_template("login.html")
 
-@app.route('/dashboard')
+@app.route('/dashboard/<name>')
 def dashboard(name):
-    return render_template("dashboard.html",name)
+    return render_template("dashboard.html",name=name)
 
 
 @app.route('/logout')

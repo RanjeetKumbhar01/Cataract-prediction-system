@@ -53,27 +53,27 @@
           </div>
           <button type="submit" class="login-button">Sign Up</button>
         </form>
+        <br />
+
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <ul>
+          {% for message in messages %} {{ message }} {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
       </div>
     </div>
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div class="messages">
-      <ul>
-        {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %} {% endwith %}
 
     <!-- Footer Section -->
     <footer class="footer">
       <p>
-        Copyright &copy; 2024 <span>|</span> by <a href="#">Team CataractAI</a>
+        Copyright &copy; 2024 <span>|</span> by <a href="#">CataractAI</a>
         <br />
         Source code available on
-        <a href="#" target="_blank">GitHub</a>
+        <a
+          href="https://github.com/RanjeetKumbhar01/Cataract-prediction-system"
+          target="_blank"
+          >GitHub</a
+        >
       </p>
     </footer>
   </body>
