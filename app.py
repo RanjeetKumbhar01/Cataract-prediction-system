@@ -42,6 +42,11 @@ def is_valid_age(age):
         return False, "Please enter a valid age between 10 and 100."
     return True,""
 
+def is_valid_name(name):
+    if re.match("^[A-Za-z ]{2,}$", name):
+        return True
+    else:
+        return False
 
 @app.route('/')
 def home(): 
@@ -59,6 +64,11 @@ def signup_patient():
 
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+        # Validate name
+        if not is_valid_name(name):
+            flash("Invalid name format.")
+            return redirect(url_for('signup_patient'))
+        
         # Validate email
         if not is_valid_email(email):
             flash("Invalid email format. Please use a valid email like 'user@example.com'.")
@@ -109,6 +119,26 @@ def signup_staff():
         logging.info(f"Registration data: name={name}, HospitalName={HospitalName},password={password}, email={email}\n")
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+
+        # Validate name
+        if not is_valid_name(name):
+            flash("Invalid name format.")
+            return redirect(url_for('signup_staff'))
+        
+        if not is_valid_name(HospitalName):
+            flash("Invalid Hospital Name.")
+            return redirect(url_for('signup_staff'))
+        
+        # Validate email
+        if not is_valid_email(email):
+            flash("Invalid email format. Please use a valid email like 'user@example.com'.")
+            return redirect(url_for('signup_staff'))
+
+        valid_password, password_msg = is_valid_password(password)
+        if not valid_password:
+            flash(password_msg)
+            return redirect(url_for('signup_staff'))
+
         try:
             # Insert the data into the MySQL database
             sql = "INSERT INTO users (name, email, password, user_type, hospital_name) VALUES (%s, %s, %s, 'staff', %s)"
@@ -122,7 +152,7 @@ def signup_staff():
             else:
                 flash(f'Error: {str(e)}', 'error')
 
-            return redirect(url_for('signup_patient'))
+            return redirect(url_for('signup_staff'))
 
         except Exception as e:
             logging.error(f"Error creating user: {str(e)}")

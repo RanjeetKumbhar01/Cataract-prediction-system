@@ -17,6 +17,6 @@ desc users;
 -- drop table users;
 select * from users;
 
--- SET SQL_SAFE_UPDATES = 0;
-DELETE FROM users WHERE name = 'ranjeet';
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM users WHERE name = '@434';
 SET SQL_SAFE_UPDATES = 1;
