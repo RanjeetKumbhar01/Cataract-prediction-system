@@ -14,7 +14,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
       <div class="logo">
-        <a href="index.html">
+        <a href="/">
           <img
             src="{{ url_for('static', filename='eye.png') }}"
             alt="CataractAI Logo"
@@ -37,17 +37,35 @@
         <form action="{{ url_for('signup_staff') }}" method="post">
           <div class="input-group">
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" required />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value="{{ name|default('') }}"
+              required
+            />
           </div>
           <div class="input-group">
             <label for="HospitalName" style="margin-right: 100px"
               >Hospital Name</label
             >
-            <input type="text" id="HospitalName" name="HospitalName" required />
+            <input
+              type="text"
+              id="HospitalName"
+              name="HospitalName"
+              value="{{ HospitalName|default('') }}"
+              required
+            />
           </div>
           <div class="input-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value="{{ email|default('') }}"
+              required
+            />
           </div>
           <div class="input-group">
             <label for="password">Password</label>
@@ -69,12 +87,12 @@
       <p>
         Copyright &copy; 2024 <span>|</span> by <a href="#">CataractAI</a>
         <br />
-        Source code available on
+        <!-- Source code available on
         <a
           href="https://github.com/RanjeetKumbhar01/Cataract-prediction-system"
           target="_blank"
           >GitHub</a
-        >
+        > -->
       </p>
     </footer>
   </body>

@@ -143,8 +143,26 @@ h2 {
   background-color: #555;
 }
 
-.under-construction {
+/* Dashboard  */
+.dashboard-intro {
+  margin-left: 50px;
   margin-top: 100px;
+}
+
+/* Home */
+.home-info {
+  margin-left: 50px;
+  margin-top: 100px;
+}
+.home-info-t-steps {
+  margin-top: 40px;
+  /* margin-left: 50px; */
+  align-content: center;
+}
+.home-info-steps {
+  margin-top: 20px;
+  /* margin-left: 50px; */
+  align-content: center;
 }
 
 /* Styles for error and success messages */

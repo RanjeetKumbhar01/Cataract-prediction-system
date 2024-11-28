@@ -4,10 +4,6 @@ __pycache__
 
 cat/
 
-static/serviceAccountKey.json
+model/cnnModel.h5
 
-models/
-
-```
-firebase_config.py
-```s
+.vscode

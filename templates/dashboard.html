@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CataractAI | Home</title>
+    <title>CataractAI | Dashboard</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -14,7 +14,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
       <div class="logo">
-        <a href="index.html">
+        <a href="/">
           <img
             src="{{ url_for('static', filename='eye.png') }}"
             alt="CataractAI Logo"
@@ -23,17 +23,55 @@
         <!-- Replace with your actual logo path -->
       </div>
       <ul class="nav-links">
-        <li><a href="#">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/logout">Logout</a></li>
       </ul>
     </nav>
 
-    <div class="under-construction">
-      <h1>Welcome,{{name}}!!</h1>
+    <div class="dashboard-intro">
+      <h1>Welcome,{{name}}!</h1>
       <br />
-      <!-- <a href="/logout">Logout</a> -->
-      <p>This page is currently under construction.</p>
-      <p>Stay tuned for updates!</p>
+      <p>Upload an image to check for cataracts.</p>
+      <br />
+
+      <!-- Image Upload Form -->
+      <!-- Image Upload Form -->
+      <form
+        action="{{ url_for('predict') }}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="upload-form"
+      >
+        <label for="imageUpload" class="upload-label">Select an Image:</label>
+        <input
+          type="file"
+          id="imageUpload"
+          name="image"
+          accept="image/*"
+          required
+        />
+        <button type="submit" class="upload-button">Upload and Analyze</button>
+      </form>
+
+      <!-- Display Prediction Result -->
+      {% if result %}
+      <div class="result">
+        <br />
+        <br />
+        <br />
+        <h2>Analysis Result:</h2>
+        <p>{{ result }}</p>
+      </div>
+      {% endif %}
+      <br />
+      <br />
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
     </div>
 
     <!-- Footer Section -->
@@ -41,12 +79,12 @@
       <p>
         Copyright &copy; 2024 <span>|</span> by <a href="#">CataractAI</a>
         <br />
-        Source code available on
+        <!-- Source code available on
         <a
           href="https://github.com/RanjeetKumbhar01/Cataract-prediction-system"
           target="_blank"
           >GitHub</a
-        >
+        > -->
       </p>
     </footer>
   </body>
