@@ -1,6 +1,6 @@
 # CataractAI 👁️
 
-# Deployed Project: [Hugging Face: CataractAI](https://huggingface.co/spaces/Ranjeet-Potter/CataractAI-Cataract-Prediction-System)
+# Deployed Project: [Hugging Face - CataractAI](https://huggingface.co/spaces/Ranjeet-Potter/CataractAI-Cataract-Prediction-System)
 
 CataractAI is a platform designed for medical staff and patients to facilitate the early detection of cataracts. The platform enables users to sign up, log in, and upload Fundus images. The uploaded images are analyzed using a deep learning model, EfficientNetB0, pre-trained on ImageNet, to determine whether cataracts are present or not.
 
@@ -34,8 +34,8 @@ CataractAI is a platform designed for medical staff and patients to facilitate t
 
 **1. Clone the repository:**
 
-        git clone https://github.com/your-repo/CataractAI.git
-        cd CataractAI
+        git clone https://github.com/RanjeetKumbhar01/CataractAI-Cataract-Prediction-System.git
+        cd CataractAI-Cataract-Prediction-System
 
 **2. Install dependencies:**
 
